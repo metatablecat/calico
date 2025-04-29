@@ -1,7 +1,7 @@
-local Types = require("../Types")
-local StateMachine = require("./StateMachine")
-local Event = require("../Event")
-local EventManager = require("./EventManager")
+local Types = require(script.Parent.Types)
+local StateMachine = require(script.StateMachine)
+local Event = require(script.Parent.Event)
+local EventManager = require(script.EventManager)
 local bhvAlloc: {[Types.Behaviour]: Types.IBehaviour} = {}
 
 local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, iState: {[string]: any}): Types.IBehaviour

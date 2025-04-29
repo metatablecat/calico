@@ -2,7 +2,7 @@
 -- note: disconnected script signals are assumed to be dangling references and
 -- will be overwritten if given the chance
 
-local Types = require("../Types")
+local Types = require(script.Parent.Parent.Types)
 local GC_REST_TIME = 1
 local GC_MAX_BUFFER = 32
 

@@ -1,8 +1,7 @@
 -- Descriptor syntax allows you to define CollectionService tags using a "Descriptor" object, which is very close to the underlying objects
 
-local Types = require("./Types")
-local Behaviour = require("../lib/Behaviour/Behaviour")
-local Runtime = require("./DescriptorRuntime")
+local Types = require(script.Types)
+local Behaviour = require(script.Parent.lib.Behaviour)
 local PTR_ASSERTION = newproxy(false)
 
 local function SignalPtr<O, A...>(name): Types.SignalPtr<O, A...>
@@ -97,8 +96,6 @@ local function instanceBuilder(description: Types.Description, inst: Instance): 
 end
 
 return function(classID: string, describe: (Types.Descriptor) -> {[string]: any}?): Types.Description
-	Runtime.assertUndefinedClassID(classID)
-
 	local description: Types.Description = {
 		CollectionTag = classID,
 		Signals = {},

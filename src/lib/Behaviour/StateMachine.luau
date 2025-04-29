@@ -1,5 +1,5 @@
-local Types = require("../Types")
-local Event = require("../Event")
+local Types = require(script.Parent.Parent.Types)
+local Event = require(script.Parent.Parent.Event)
 
 return function(bhv: Types.Behaviour, initState: {[string]: any}): Types.StateMachine
 	local sm = {} :: Types.StateMachine

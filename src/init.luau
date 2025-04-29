@@ -2,12 +2,10 @@
 -- currently, only legacy syntax is supported
 -- TODO: Descriptor syntax
 
-local Behaviour = require("./lib/Behaviour/Behaviour")
-local Event = require("./lib/Event")
-local Types = require("./lib/Types")
-local Descriptor = require("./descript/Descriptor")
-local DescriptorRuntime = require("./descript/DescriptorRuntime")
-local DescriptorTypes = require("./descript/Types")
+local Behaviour = require(script.lib.Behaviour)
+local Event = require(script.lib.Event)
+local Types = require(script.lib.Types)
+local DescriptorRuntime = require(script.rt)
 
 local Calico = {}
 
@@ -20,16 +18,20 @@ function Calico.Event<O, A...>(sender: O): Types.Event<O, A...>
 	return Event(sender)
 end
 
-function Calico.Describe(classID: string, describe: (DescriptorTypes.Descriptor) -> {[string]:any}?): DescriptorTypes.Description
-	local desc = Descriptor(classID, describe)
-	DescriptorRuntime.newDescriptionInfo(desc)
-	return desc
-end
-
+Calico.Describe = DescriptorRuntime.newDescriptionInfo
 Calico.AddBehaviour = DescriptorRuntime.addBehaviour
 Calico.RemoveBehaviour = DescriptorRuntime.removeBehaviour
 Calico.FindBehaviour = DescriptorRuntime.findBehaviour
 Calico.GetInstanceBehaviours = DescriptorRuntime.getBehaviours
 
+-- COMRuntime is intended for low-level internal usage if you're building a runtime
+-- Its best to leave these functions unless you wish to work with COM instances
+-- directly
+Calico.COMRuntime = {}
+Calico.COMRuntime.TagCOMInstance = DescriptorRuntime.tagBehaviourCOM
+Calico.COMRuntime.UnloadCOMInstance = DescriptorRuntime.removeBehaviourCOM
+Calico.COMRuntime.UntagCOMInstance = DescriptorRuntime.untagCOM
+
+table.freeze(Calico.COMRuntime)
 table.freeze(Calico)
 return Calico

@@ -1,4 +1,4 @@
-local Types = require("../lib/Types")
+local Types = require(script.Parent.Parent.lib.Types)
 
 export type Signal<A, O...> = Types.Signal<A, O...>
 
