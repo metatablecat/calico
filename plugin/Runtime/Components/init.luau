@@ -1,3 +1,0 @@
-local Components = {}
-
-return Components
