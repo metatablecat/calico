@@ -23,7 +23,7 @@ export type Description = {
 	Signals: {[SignalSymbol]: (Types.Behaviour, Types.SenderParams<any>, ...any) -> ()},
 	EventTags: {[string]: true},
 	State: {[string]: any},
-	Build: (Description, Instance) -> Types.Behaviour
+	Build: (Description, Instance?) -> Types.Behaviour
 }
 
 export type Descriptor = {

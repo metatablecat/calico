@@ -72,10 +72,12 @@ local function descriptor(description): Types.Descriptor
 	return descriptor
 end
 
-local function instanceBuilder(description: Types.Description, inst: Instance): Types.Behaviour
-	assert(inst.Parent, "no parent to attach component to")
+local function instanceBuilder(description: Types.Description, inst: Instance?): Types.Behaviour
+
+	if inst then assert(inst.Parent, "no parent to attach component to") end
 	if description.InstanceAssertion then
-		assert(description.InstanceAssertion(inst.Parent), `Description {description.CollectionTag} received an invalid instance`)
+		if not inst then error(`Description {description.CollectionTag} requires an Instance`) end
+		assert(description.InstanceAssertion(inst.Parent::Instance), `Description {description.CollectionTag} received an invalid instance`)
 	end
 	-- we need to pcall this for safety
 	-- anoyingly, event access errors can throw
@@ -86,6 +88,10 @@ local function instanceBuilder(description: Types.Description, inst: Instance): 
 			-- find signal from allocated pointer and bind
 			obj:On(obj[signalInfo.SignalObject], signalInfo.Tag, handler)
 		elseif signalInfo.SignalType == "RBX" then
+			if not inst then
+				warn(`OnInstance was used in the Description, but no Instance was assigned`)
+				continue
+			end
 			obj:OnRBXSignal(signalInfo.Instance or inst.Parent, signalInfo.SignalObject, signalInfo.Tag, handler)
 		elseif signalInfo.SignalType == "BehaviouralLinked" then
 			obj:On(signalInfo.SignalObject, signalInfo.Tag, handler)
