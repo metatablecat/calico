@@ -1,6 +1,4 @@
 -- CALICO: Behaviour library
--- currently, only legacy syntax is supported
--- TODO: Descriptor syntax
 
 local Behaviour = require(script.lib.Behaviour)
 local Event = require(script.lib.Event)
