@@ -88,11 +88,19 @@ local function instanceBuilder(description: Types.Description, inst: Instance?, 
 			-- find signal from allocated pointer and bind
 			obj:On(obj[signalInfo.SignalObject], signalInfo.Tag, handler)
 		elseif signalInfo.SignalType == "RBX" then
+
 			if not inst then
 				warn(`OnInstance was used in the Description, but no Instance was assigned`)
 				continue
 			end
-			obj:OnRBXSignal(signalInfo.Instance or inst.Parent, signalInfo.SignalObject, signalInfo.Tag, handler)
+
+			local applyInst = signalInfo.Instance or (if applyMode == "COM" then inst.Parent else inst)
+			if not applyInst then
+				warn(`OnInstance was used in the Description, but no Instance to apply to.`)
+				continue
+			end
+
+			obj:OnRBXSignal(applyInst, signalInfo.SignalObject, signalInfo.Tag, handler)
 		elseif signalInfo.SignalType == "BehaviouralLinked" then
 			obj:On(signalInfo.SignalObject, signalInfo.Tag, handler)
 		end
