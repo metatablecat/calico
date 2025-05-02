@@ -4,7 +4,7 @@ local Event = require(script.Parent.Event)
 local EventManager = require(script.EventManager)
 local bhvAlloc: {[Types.Behaviour]: Types.IBehaviour} = {}
 
-local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, iState: {[string]: any}): Types.IBehaviour
+local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Types.ApplyMode, iState: {[string]: any}): Types.IBehaviour
 	local ibhv = {} :: Types.IBehaviour
 	ibhv.Behaviour = bhv
 	ibhv.EventManager = EventManager(bhv)
@@ -13,10 +13,16 @@ local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, iState: {[strin
 
 	ibhv.Destroying = Event(bhv)
 	ibhv.Init = Event(bhv)
-	ibhv.COMInstance = inst
+
 	if inst then
-		assert(inst.Parent, "cannot assign a component instance without a parent to attach to")
-		bhv.Instance = inst.Parent
+		if  ApplyMode == "Direct" then
+			ibhv.COMInstance = inst
+			bhv.Instance = inst
+		elseif ApplyMode == "COM" then
+			assert(inst.Parent, "cannot assign a component instance without a parent to attach to")
+			ibhv.COMInstance = inst
+			bhv.Instance = inst.Parent
+		end
 	end
 
 	ibhv.Destroyed = false
@@ -154,9 +160,9 @@ function BHVImpl.SetState(
 	private.StateMachine:SetState(key, val)
 end
 
-return function(classID: string, i: Instance?, stateInit: {[string]: any})
+return function(classID: string, i: Instance?, applyMode: Types.ApplyMode, stateInit: {[string]: any})
 	local bhv = {} :: Types.Behaviour
-	local ibhv = IBehaviour(i, bhv, stateInit)
+	local ibhv = IBehaviour(i, bhv, applyMode, stateInit)
 
 	bhv.ClassID = classID
 	bhv.Destroying = ibhv.Destroying.Signal

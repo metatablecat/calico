@@ -3,12 +3,12 @@
 local Behaviour = require(script.lib.Behaviour)
 local Event = require(script.lib.Event)
 local Types = require(script.lib.Types)
-local DescriptorRuntime = require(script.rt)
+local DescriptorRuntime = require(script.COMRuntime)
 
 local Calico = {}
 
-function Calico.new(cid: string, inst: Instance?, istate: {[string]: any}?): Types.Behaviour
-	return Behaviour(cid, inst, istate or {})
+function Calico.new(cid: string, inst: Instance?, applyMode: Types.ApplyMode?, istate: {[string]: any}?): Types.Behaviour
+	return Behaviour(cid, inst, applyMode or "Direct", istate or {})
 end
 
 function Calico.Event<O, A...>(sender: O): Types.Event<O, A...>
@@ -17,6 +17,7 @@ function Calico.Event<O, A...>(sender: O): Types.Event<O, A...>
 end
 
 Calico.Describe = DescriptorRuntime.newDescriptionInfo
+Calico.DescribeUntracked = DescriptorRuntime.untrackedDescriptionInfo
 Calico.AddBehaviour = DescriptorRuntime.addBehaviour
 Calico.RemoveBehaviour = DescriptorRuntime.removeBehaviour
 Calico.FindBehaviour = DescriptorRuntime.findBehaviour

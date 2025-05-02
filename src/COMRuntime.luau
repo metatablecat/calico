@@ -4,6 +4,8 @@ local Descriptor = require(script.Parent.descript)
 -- Unlike other objects, this just provides a starter point for descriptions
 -- you need to pass Instances yourself
 
+-- This is just for COM instances, use untracked descriptions to build your own systems
+
 -- CALICO RT HOOKS
 local Runtime = {}
 local LoadedDescriptions: {[string]: Types.Description} = {}
@@ -18,7 +20,7 @@ local function I_DESTROY(i: Instance)
 end
 
 local function I_SETUP(i: Instance, desc: Types.Description): (boolean, Types.Behaviour)
-	local ok, bhv = pcall(desc.Build, desc, i)
+	local ok, bhv = pcall(desc.Build, desc, i, "COM"::"COM")
 	if ok then
 		IState[i] = bhv
 		return true, bhv
@@ -53,6 +55,13 @@ function Runtime.newDescriptionInfo(
 	local desc = Descriptor(classID, describe)
 	LoadedDescriptions[desc.CollectionTag] = desc
 	return desc
+end
+
+function Runtime.untrackedDescriptionInfo(
+	classID: string,
+	describe: (Types.Descriptor) -> {[string]: any}?
+): Types.Description
+	return Descriptor(classID, describe)
 end
 
 local function BuildObject(
@@ -112,7 +121,7 @@ function Runtime.untagCOM(
 )
 	local is = IState[com]
 	local ae = AncestryEvents[com]
-	if not is or ae then error(`{com} has no associated Behaviour`) end
+	if not (is or ae) then error(`{com} has no associated Behaviour`) end
 
 	if is then I_DESTROY(com) end
 

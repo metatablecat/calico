@@ -1,5 +1,7 @@
 -- Typedefs
 
+export type ApplyMode = "Direct"|"COM"
+
 -- ./Behaviour
 export type IBehaviour = {
 	-- Internal linkers and event state

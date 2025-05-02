@@ -72,7 +72,7 @@ local function descriptor(description): Types.Descriptor
 	return descriptor
 end
 
-local function instanceBuilder(description: Types.Description, inst: Instance?): Types.Behaviour
+local function instanceBuilder(description: Types.Description, inst: Instance?, applyMode: Types.ApplyMode?): Types.Behaviour
 
 	if inst then assert(inst.Parent, "no parent to attach component to") end
 	if description.InstanceAssertion then
@@ -82,7 +82,7 @@ local function instanceBuilder(description: Types.Description, inst: Instance?):
 	-- we need to pcall this for safety
 	-- anoyingly, event access errors can throw
 	
-	local obj = Behaviour(description.CollectionTag, inst, description.State)
+	local obj = Behaviour(description.CollectionTag, inst, applyMode or "Direct", description.State)
 	for signalInfo, handler in description.Signals do
 		if signalInfo.SignalType == "Behavioural" then
 			-- find signal from allocated pointer and bind
