@@ -10,13 +10,13 @@ return function(bhv: Types.Behaviour, initState: {[string]: any}): Types.StateMa
 	end
 
 	function sm:GetStates()
-		return table.clone(sm.State)
+		return table.clone(self.State)
 	end
 
 	function sm:SetState(key, val)
-		local ov = sm[key]
+		local ov = self.State[key]
 		if type(val) == "table" or ov ~= val then
-			sm[key] = val
+			self.State[key] = val
 			self.StateChanged:Fire(key, val, ov)
 		end
 	end
