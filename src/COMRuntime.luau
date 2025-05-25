@@ -95,7 +95,7 @@ function Runtime.addBehaviour(
 ): Types.Behaviour
 	local desc = LoadedDescriptions[classID]
 	if not desc then error(`Description {classID} not defined in context.`) end
-	if not desc.InstanceAssertion(i) then error(`Cant assign {i} to description {classID}`) end
+	if desc.InstanceAssertion and not desc.InstanceAssertion(i) then error(`Cant assign {i} to description {classID}`) end
 
 	local comOverload = Instance.new("BindableEvent")
 	comOverload.Parent = i
