@@ -1,8 +1,23 @@
+local RunService = game:GetService("RunService")
 local Types = require(script.Parent.Types)
 local StateMachine = require(script.StateMachine)
 local Event = require(script.Parent.Event)
 local EventManager = require(script.EventManager)
+
+local STREAMING_ENABLED = workspace.StreamingEnabled
+local IS_CLIENT = RunService:IsClient()
+
 local bhvAlloc: {[Types.Behaviour]: Types.IBehaviour} = {}
+
+local function checkStreamingPersistance(i: Instance?)
+	if not i or not STREAMING_ENABLED or not IS_CLIENT then return end
+	if i:IsA("Model") then
+		local mode = i.ModelStreamingMode
+		if mode == Enum.ModelStreamingMode.Nonatomic or mode == Enum.ModelStreamingMode.Default then
+			warn(`Model {i:GetFullName()} streaming's mode is set to Nonatomic, this can create issues with the shape of the object. Use Atomic or Persistent streaming`)
+		end
+	end
+end
 
 local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Types.ApplyMode, iState: {[string]: any}): Types.IBehaviour
 	local ibhv = {} :: Types.IBehaviour
@@ -15,7 +30,7 @@ local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Type
 	ibhv.Init = Event(bhv)
 
 	if inst then
-		if  ApplyMode == "Direct" then
+		if ApplyMode == "Direct" then
 			ibhv.COMInstance = inst
 			bhv.Instance = inst
 		elseif ApplyMode == "COM" then
@@ -23,6 +38,8 @@ local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Type
 			ibhv.COMInstance = inst
 			bhv.Instance = inst.Parent
 		end
+
+		checkStreamingPersistance(bhv.Instance)
 	end
 
 	ibhv.Destroyed = false
