@@ -1,10 +1,6 @@
 {
 	"name": "Calico",
 	"tree": {
-		"$path": "src",
-
-		"CollectionRuntime": {
-			"$path": "CollectionRuntime"
-		}
+		"$path": "src"
 	}
 }

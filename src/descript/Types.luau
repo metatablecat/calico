@@ -1,6 +1,5 @@
 local Types = require(script.Parent.Parent.lib.Types)
 
-export type ApplyMode = Types.ApplyMode
 export type Signal<A, O...> = Types.Signal<A, O...>
 
 export type SignalSymbol = ({
@@ -24,7 +23,8 @@ export type Description = {
 	Signals: {[SignalSymbol]: (Types.Behaviour, Types.SenderParams<any>, ...any) -> ()},
 	EventTags: {[string]: true},
 	State: {[string]: any},
-	Build: (Description, Instance?, ApplyMode?) -> Types.Behaviour
+	Build: (Description, Instance?) -> Types.Behaviour,
+	UseInstanceAsCOM: true
 }
 
 export type Descriptor = {
@@ -37,7 +37,8 @@ export type Descriptor = {
 	Init: SignalPtr<Types.Behaviour>,
 	Destroying: SignalPtr<Types.Behaviour>,
 	StateChanged: SignalPtr<Types.Behaviour, string, any, any>,
-	Broadcasting: SignalPtr<Types.Behaviour, string, any>
+	Broadcasting: SignalPtr<Types.Behaviour, string, any>,
+	UseInstanceAsCOM: true
 }
 
 export type SignalPtr<O, A...> = {

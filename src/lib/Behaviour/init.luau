@@ -19,7 +19,7 @@ local function checkStreamingPersistance(i: Instance?)
 	end
 end
 
-local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Types.ApplyMode, iState: {[string]: any}): Types.IBehaviour
+local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, useIAC: boolean, iState: {[string]: any}): Types.IBehaviour
 	local ibhv = {} :: Types.IBehaviour
 	ibhv.Behaviour = bhv
 	ibhv.EventManager = EventManager(bhv)
@@ -30,10 +30,10 @@ local function IBehaviour(inst: Instance?, bhv: Types.Behaviour, ApplyMode: Type
 	ibhv.Init = Event(bhv)
 
 	if inst then
-		if ApplyMode == "Direct" then
+		if useIAC then
 			ibhv.COMInstance = inst
 			bhv.Instance = inst
-		elseif ApplyMode == "COM" then
+		else
 			assert(inst.Parent, "cannot assign a component instance without a parent to attach to")
 			ibhv.COMInstance = inst
 			bhv.Instance = inst.Parent
@@ -177,9 +177,9 @@ function BHVImpl.SetState(
 	private.StateMachine:SetState(key, val)
 end
 
-return function(classID: string, i: Instance?, applyMode: Types.ApplyMode, stateInit: {[string]: any})
+return function(classID: string, i: Instance?, useIAC: boolean, stateInit: {[string]: any})
 	local bhv = {} :: Types.Behaviour
-	local ibhv = IBehaviour(i, bhv, applyMode, stateInit)
+	local ibhv = IBehaviour(i, bhv, useIAC, stateInit)
 
 	bhv.ClassID = classID
 	bhv.Destroying = ibhv.Destroying.Signal

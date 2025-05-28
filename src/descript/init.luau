@@ -19,6 +19,7 @@ local function descriptor(description): Types.Descriptor
 	descriptor.Destroying = SignalPtr("Destroying")
 	descriptor.StateChanged = SignalPtr("StateChanged")
 	descriptor.Broadcasting = SignalPtr("Broadcasting")
+	descriptor.UseInstanceAsCOM = false
 	
 	function descriptor:On(sigPtr, tag, handler)
 		if tag and self._description.EventTags[tag] then error(`Tag {tag} is already declared`) end
@@ -72,7 +73,7 @@ local function descriptor(description): Types.Descriptor
 	return descriptor
 end
 
-local function instanceBuilder(description: Types.Description, inst: Instance?, applyMode: Types.ApplyMode?): Types.Behaviour
+local function instanceBuilder(description: Types.Description, inst: Instance?): Types.Behaviour
 
 	if inst then assert(inst.Parent, "no parent to attach component to") end
 	if description.InstanceAssertion then
@@ -82,7 +83,7 @@ local function instanceBuilder(description: Types.Description, inst: Instance?, 
 	-- we need to pcall this for safety
 	-- anoyingly, event access errors can throw
 	
-	local obj = Behaviour(description.CollectionTag, inst, applyMode or "Direct", description.State)
+	local obj = Behaviour(description.CollectionTag, inst, description.UseInstanceAsCOM, description.State)
 	for signalInfo, handler in description.Signals do
 		if signalInfo.SignalType == "Behavioural" then
 			-- find signal from allocated pointer and bind
@@ -94,7 +95,7 @@ local function instanceBuilder(description: Types.Description, inst: Instance?, 
 				continue
 			end
 
-			local applyInst = signalInfo.Instance or (if applyMode == "COM" then inst.Parent else inst)
+			local applyInst = signalInfo.Instance or (if description.UseInstanceAsCOM then inst.Parent else inst)
 			if not applyInst then
 				warn(`OnInstance was used in the Description, but no Instance to apply to.`)
 				continue
@@ -115,12 +116,14 @@ return function(classID: string, describe: (Types.Descriptor) -> {[string]: any}
 		Signals = {},
 		State = {},
 		EventTags = {},
-		Build = instanceBuilder
+		Build = instanceBuilder,
+		UseInstanceAsCOM = false
 	}
 
 	local descript = descriptor(description)
 	local state = describe(descript) or {}
 	description.State = state
 	description.InstanceAssertion = descript.InstanceAssertion
+	description.UseInstanceAsCOM = descript.UseInstanceAsCOM
 	return description
 end
