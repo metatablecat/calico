@@ -4,6 +4,8 @@ local Types = require(script.Types)
 local Behaviour = require(script.Parent.lib.Behaviour)
 local PTR_ASSERTION = newproxy(false)
 
+export type Description = Types.Description
+
 local function SignalPtr<O, A...>(name): Types.SignalPtr<O, A...>
 	local ptr = {} :: Types.SignalPtr<O, A...>
 	ptr.Name = name
@@ -74,11 +76,11 @@ local function descriptor(description): Types.Descriptor
 end
 
 local function instanceBuilder(description: Types.Description, inst: Instance?): Types.Behaviour
-
-	if inst then assert(inst.Parent, "no parent to attach component to") end
+	local parent = if inst then if description.UseInstanceAsCOM then inst else inst.Parent else nil
+	assert(parent, "no parent to attach component to")
 	if description.InstanceAssertion then
 		if not inst then error(`Description {description.CollectionTag} requires an Instance`) end
-		assert(description.InstanceAssertion(inst.Parent::Instance), `Description {description.CollectionTag} received an invalid instance`)
+		assert(description.InstanceAssertion(parent::Instance), `Description {description.CollectionTag} received an invalid instance`)
 	end
 	-- we need to pcall this for safety
 	-- anoyingly, event access errors can throw
